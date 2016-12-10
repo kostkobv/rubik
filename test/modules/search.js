@@ -20,6 +20,10 @@ describe('search module', () => {
       .reply(200, articlesMock)
   );
 
+  afterEach(() => {
+    searchInstance.getArticles();
+  });
+
   it('should create new instance each time', () => {
     const testConfig = { test: 'test' };
     const newSearchInstance = search(testConfig);
@@ -112,8 +116,8 @@ describe('search module', () => {
     it('should not go to previous page if it is on a first page', () => {
       searchInstance.fetch().then(() => {
         const pageNumber = searchInstance.page;
-        searchInstance.getArticles();
 
+        searchInstance.getArticles();
         searchInstance.previousPage();
 
         return expect(searchInstance.page).to.be.equal(pageNumber);

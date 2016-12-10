@@ -1,5 +1,7 @@
 import requests from './services/requests';
 
+const FIRST_PAGE_INDEX = 0;
+
 /**
  * Search module prototype
  * @param {Object} config - config for instance that should be created
@@ -42,7 +44,6 @@ SearchModule.prototype.parseArticles = function (res) {
  * to get content for desired page
  */
 function getPageIndex(pageNumber, articlesPerPage) {
-  const FIRST_PAGE_INDEX = 0;
   let nextPageNumber = pageNumber;
 
   if (pageNumber < FIRST_PAGE_INDEX) {
@@ -70,6 +71,11 @@ SearchModule.prototype.getArticles = function (pageNumber = 0) {
   if (nextPageArticles.length) {
     // update the actual page number
     this.page = pageNumber;
+  }
+
+  // we can't go lower than first page
+  if (pageNumber < FIRST_PAGE_INDEX) {
+    this.page = FIRST_PAGE_INDEX;
   }
 
   return nextPageArticles;
