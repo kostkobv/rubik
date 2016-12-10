@@ -29,15 +29,21 @@ module.exports = {
   },
 
   module: {
-    loaders: [{
-      test: /\.js$/,
-      include: [
-        path.resolve(__dirname, './src'),
-        path.resolve(__dirname, './test')
-      ],
-      exclude: /node_modules/,
-      loader: 'babel'
-    }]
+    loaders: [
+      {
+        test: /\.js$/,
+        include: [
+          path.resolve(__dirname, './src'),
+          path.resolve(__dirname, './test')
+        ],
+        exclude: /node_modules/,
+        loader: 'babel'
+      },
+      {
+        test: /\.json$/,
+        loader: 'json'
+      }
+    ]
   }
 
 }
