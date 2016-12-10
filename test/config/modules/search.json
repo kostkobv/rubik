@@ -1,3 +1,12 @@
 {
-
+  "articlesPerPage": 5,
+  "get": {
+    "endpoint": "/testget.php",
+    "params": {
+      "offset": 0,
+      "search": "",
+      "author": 0,
+      "action": "sickfront_filter_posts"
+    }
+  }
 }

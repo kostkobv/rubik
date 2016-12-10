@@ -1,4 +1,4 @@
-import popsicle from 'popsicle';
+import popsicle,{ plugins } from 'popsicle';
 
 let inited = false;
 let module;
@@ -9,8 +9,9 @@ let module;
  * @param {Object} params - params object
  * @returns {Promise} - outcome of the request
  */
-export function get(url, params) {
-  return popsicle({ url: `${module.config.domain}${url}`, method: 'GET', body: params });
+function get(url, params) {
+  return popsicle({ url: `${module.config.domain}${url}`, method: 'GET', body: params })
+    .use(plugins.parse('json'));
 }
 
 /**
