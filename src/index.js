@@ -1,6 +1,6 @@
-import hello from 'hello'
-import world from 'world'
+import hello from './lib/hello';
+import world from './lib/world';
 
-const main = () => console.log(`${hello()}, ${world()}!`)
+const main = () => console.log(`${hello()}, ${world()}!`);
 
-export default main
+export default main;

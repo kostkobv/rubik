@@ -1,28 +1,13 @@
-babel-webpack-package-boilerplate
+Rubik
 =================================
-
-This project is meant to show how easy and useful it can be to use [webpack] as
-a tool-chain for npm packages.
-
-Fun things in this project:
-  - Source code and tests for the package are written with [es2015] and
-    [stage-0] ([es2016]) features (specifically the features supported by
-    [babel]: [es2015][babel-preset-es2015], [stage-0][babel-preset-stage-0]).
-    See any `*.js` files in `src` and `test` for examples. See `.babelrc` for
-    the babel configuration, and `module.loaders` in `webpack.config.js` to see
-    how babel was integrated into webpack.
-  - Modules in `src/lib` can be loaded universally, like modules found in
-    `node_modules`. See `src/index.js` and `test/index.js` for examples. See
-    `resolve.modulesDirectories` in `webpack.config.js` to see how this was
-    configured.
 
 Getting Started
 ---------------
 
 Clone the repository and install dependencies with `npm`.
 ```bash
-$ git clone https://github.com/resisttheurge/babel-webpack-package-boilerplate.git
-$ cd babel-webpack-package-boilerplate
+$ git clone https://github.com/kostkobv/rubik.git
+$ cd rubik
 $ npm install
 ```
 
@@ -48,8 +33,6 @@ Run the project with `npm start`.
 
 ```bash
 $ npm start
-
-  hello, world!
 ```
 
 As said before, this will automatically run the build script first.
@@ -72,19 +55,7 @@ Publish the project on the local machine (for testing) with `npm install`.
 
 ```bash
 $ npm install -g ./
-$ babel-webpack-package-boilerplate
-
-  hello, world!
-```
-
-Publish the package globally with `npm publish`.
-
-```bash
-$ npm publish
-$ npm install -g babel-webpack-package-boilerplate
-$ babel-webpack-package-boilerplate
-
-  hello, world!
+$ rubik
 ```
 
 In both cases, again, this will automatically run the build script first.

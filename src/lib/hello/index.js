@@ -1,2 +1,2 @@
-const hello = () => "hello"
-export default hello
+const hello = () => 'hello';
+export default hello;

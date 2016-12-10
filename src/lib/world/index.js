@@ -1,3 +1,3 @@
-const world = () => "world"
+const world = () => 'world';
 
-export default world
+export default world;
