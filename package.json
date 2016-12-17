@@ -22,7 +22,6 @@
     "lint": "eslint ./{src,test}/**/*.js",
     "build": "rimraf build && webpack",
     "prestart": "npm run build",
-    "start": "node bin/main.js",
     "pretest": "npm run prebuild",
     "test": "mocha test/index.js --require babel-register",
     "watch": "npm-watch"
