@@ -66,6 +66,8 @@
     "mocha": "^2.4.5",
     "nock": "^9.0.2",
     "rimraf": "^2.5.1",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "webpack": "^1.12.12"
   },
   "dependencies": {
