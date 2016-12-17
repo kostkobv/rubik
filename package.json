@@ -69,6 +69,7 @@
     "webpack": "^1.12.12"
   },
   "dependencies": {
+    "lodash": "^4.17.2",
     "popsicle": "^9.0.0"
   }
 }
