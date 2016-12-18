@@ -17,9 +17,9 @@ function SearchModule(config) {
  * Fetches the articles
  * @returns {Promise} - result of get articles
  */
-SearchModule.prototype.fetch = function () {
+SearchModule.prototype.fetch = function (params) {
   return requests()
-    .get(this.config.get.endpoint, this.config.get.params)
+    .get(this.config.get.endpoint, params || this.config.get.params)
     .then(res => this.parseArticles(res));
 };
 

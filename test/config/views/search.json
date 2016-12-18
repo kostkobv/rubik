@@ -1,0 +1,23 @@
+{
+  "selectors": {
+    "element": "[data-search]",
+    "form": {
+      "element": "[data-search-form]",
+      "filters": "select"
+    },
+    "results": {
+      "element": "[data-search-results]"
+    }
+  },
+  "templates": {
+    "result": "<div><%- article.post_title %></div>",
+    "page": "<div data-search-active='<%- page.active %>' data-search-page='<%- page.number %>'><%- page.number + 1 %></div>"
+  },
+  "model": {
+    "articlesPerPage": 5,
+    "get": {
+      "action": "sickfront_filter_posts",
+      "endpoint": "/testget.php"
+    }
+  }
+}

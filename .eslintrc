@@ -2,7 +2,8 @@
   "extends": "airbnb",
   "rules": {
     "func-names": ["error", "never"],
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "no-restricted-syntax": ["off", "ForOfStatement"]
   },
   "env": {
     "browser": true,

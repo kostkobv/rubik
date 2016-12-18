@@ -63,6 +63,7 @@
     "eslint-plugin-react": "^6.8.0",
     "json-loader": "^0.5.4",
     "mocha": "^2.4.5",
+    "mocha-jsdom": "^1.1.0",
     "nock": "^9.0.2",
     "rimraf": "^2.5.1",
     "sinon": "^1.17.6",
@@ -71,6 +72,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.2",
-    "popsicle": "^9.0.0"
+    "popsicle": "^9.0.0",
+    "zen-observable": "^0.4.0"
   }
 }
