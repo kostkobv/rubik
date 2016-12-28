@@ -2,6 +2,8 @@ import compileTemplate from 'lodash/template';
 import Observable from 'zen-observable';
 import SearchModule from '../modules/search';
 
+const FIRST_PAGE_INDEX = 0;
+
 /**
  * Search View.
  * Handles the search.
@@ -27,21 +29,29 @@ function SearchView(config) {
   this.searchForm = this.element.querySelector(config.selectors.form.element);
   this.searchResults = this.element.querySelector(config.selectors.results.element);
   this.searchResultsCount = this.element.querySelector(config.selectors.results.count);
+  this.paginationPages = this.element.querySelector(config.selectors.pagination.element);
+  this.paginationNextPage = this.element.querySelector(config.selectors.pagination.next);
+  this.paginationPreviousPage = this.element.querySelector(config.selectors.pagination.previous);
 
   // link configs
   this.config = config;
 
   // start listening to form submits
-  this.initListeners().subscribe(data => this.fetch(data));
+  this.initFormListeners().subscribe(data =>
+    this.fetch(data).then(() => this.renderLayout(FIRST_PAGE_INDEX))
+  );
+
+  this.initPaginationListeners().subscribe(pageNumber => this.renderLayout(pageNumber));
 }
 
 /**
  * Fetches the data from model and renders the layout by default on the 0 page
  * @param {Object} values - form values
+ * @returns {Promise} - result of fetching the data from API
  */
 SearchView.prototype.fetch = function (values) {
   const params = Object.assign({}, { action: this.config.model.get.action }, values);
-  this.model.fetch(params).then(() => this.renderLayout(0));
+  return this.model.fetch(params);
 };
 
 /**
@@ -72,9 +82,9 @@ function parseFormElements(formElements) {
  *
  * @returns {Observable|*} - stream observable on which is possible to subscribe for form submition
  */
-SearchView.prototype.initListeners = function () {
+SearchView.prototype.initFormListeners = function () {
   // create observable
-  this.formSubmitStream = new Observable((observer) => {
+  return new Observable((observer) => {
     // get the elements
     const formElements = this.searchForm.elements;
     const searchFormFilters = this.searchForm.querySelectorAll(this.config.selectors.form.filters);
@@ -109,8 +119,49 @@ SearchView.prototype.initListeners = function () {
       this.searchForm.removeEventListener('change', filterChangeHandler);
     };
   });
+};
 
-  return this.formSubmitStream;
+
+/**
+ * Inits the pagination listeners
+ *
+ * @returns {Observable|*} - stream observable on which is possible to subscribe
+ *          for pagination events
+ */
+SearchView.prototype.initPaginationListeners = function () {
+  return new Observable((observer) => {
+    const model = this.model;
+
+    function handler(e) {
+      const clickedPageNumber = e.target.getAttribute('data-search-page');
+      const parsedClickedPageNumber = parseInt(clickedPageNumber, 10);
+
+      if (parsedClickedPageNumber < 0 || parsedClickedPageNumber === model.page) {
+        return;
+      }
+
+      observer.next(parsedClickedPageNumber);
+    }
+
+    function nextHandler() {
+      observer.next(model.page + 1);
+    }
+
+    function prevHandler() {
+      observer.next(model.page - 1);
+    }
+
+    this.paginationPages.addEventListener('click', handler);
+    this.paginationNextPage.addEventListener('click', nextHandler);
+    this.paginationPreviousPage.addEventListener('click', prevHandler);
+
+    return () => {
+      // give ability to unchain the pagination listeners later
+      this.paginationPages.removeEventListener('click', handler);
+      this.paginationNextPage.removeEventListener('click', nextHandler);
+      this.paginationPreviousPage.removeEventListener('click', prevHandler);
+    };
+  });
 };
 
 /**
@@ -121,23 +172,109 @@ SearchView.prototype.renderResultsCount = function () {
     return;
   }
 
-  const resultsCountLayout = this.model.getArticlesCount();
-
-  this.searchResultsCount.innerHTML = resultsCountLayout;
+  this.searchResultsCount.innerHTML = this.model.getArticlesCount();
 };
 
 /**
- * Renders the layout with results
+ * Returns index of the first page that should be rendered in the pagination
+ *
+ * Required params:
+ *    pagesCount - represents the number of pages that are available
+ *    articlesPerPage - represents the max number of articles that could be shown per page
+ *    actualPageNumber - actual page number
+ *    maxPagesCount - represents the max number of pages that could be shown in pagination
+ *
+ * @param {{ pagesCount: Number, articlesPerPage: Number, actualPageNumber: Number,
+ *    maxPagesCount: Number }} params - parameters for doing calculations
+ * @returns {{ firstPageToRenderIndex: Number, lastPageToRenderIndex: Number }} - first page that
+ *      should be rendered in pagination index
+ */
+function getFirstPageToRenderIndex(params) {
+  // destructuring needed parameters from passed argument
+  const { pagesCount, articlesPerPage, actualPageNumber, maxPagesCount } = params;
+
+  // counting the shift for number of pages shown in pagination before and after current one
+  const articlesNumberShift = Math.floor(maxPagesCount / 2);
+  let firstPageToRenderIndex = actualPageNumber - articlesNumberShift;
+  let lastPageToRenderIndex = actualPageNumber + articlesNumberShift;
+
+  // if the actual page is almost in the end
+  if (pagesCount - articlesPerPage < actualPageNumber) {
+    // do not shift the pagination anymore
+    firstPageToRenderIndex = pagesCount - articlesNumberShift - 1;
+    lastPageToRenderIndex = pagesCount;
+  //  if it's in the beginning
+  } else if (actualPageNumber <= articlesNumberShift) {
+    // also do not shift it
+    firstPageToRenderIndex = FIRST_PAGE_INDEX;
+    lastPageToRenderIndex = maxPagesCount;
+  }
+
+  // if calculated index is smaller than first page index (because number of pages is smaller than
+  // max pages count) it should still start from the first page
+  if (firstPageToRenderIndex < FIRST_PAGE_INDEX) {
+    firstPageToRenderIndex = FIRST_PAGE_INDEX;
+  }
+
+  if (lastPageToRenderIndex > pagesCount) {
+    lastPageToRenderIndex = pagesCount;
+  }
+
+  return { firstPageToRenderIndex, lastPageToRenderIndex };
+}
+
+/**
+ * Renders the pagination into layout
+ */
+SearchView.prototype.renderPagination = function () {
+  const actualPageNumber = this.model.page;
+  const articlesPerPage = this.config.model.articlesPerPage;
+  const maxPagesCount = this.config.options.pagination.maxPagesCount;
+  const pagesCount = this.model.pagesCount;
+
+  const pagesToRenderIndex = getFirstPageToRenderIndex({
+    pagesCount,
+    articlesPerPage,
+    actualPageNumber,
+    maxPagesCount
+  });
+
+  let layout = '';
+  const { firstPageToRenderIndex, lastPageToRenderIndex } = pagesToRenderIndex;
+
+  for (let pageIndex = firstPageToRenderIndex; pageIndex < lastPageToRenderIndex; pageIndex += 1) {
+    layout += this.renderPage({
+      page: {
+        active: pageIndex === actualPageNumber,
+        number: pageIndex
+      }
+    });
+  }
+
+  this.paginationPages.innerHTML = layout;
+};
+
+/**
+ * Renders the layout with results and pagination
  *
  * @param {Number} page - page number that should be rendered
  */
 SearchView.prototype.renderLayout = function (page) {
+  // render results count to layout
+  this.renderResults(page);
+  this.renderResultsCount();
+  this.renderPagination();
+};
+
+/**
+ * Renders the results with articles
+ *
+ * @param {Number} page - page number that should be rendered
+ */
+SearchView.prototype.renderResults = function (page) {
   // fetch the articles for the current page
   const articles = this.model.getArticles(page);
   let layout = '';
-
-  // render results count to layout
-  this.renderResultsCount();
 
   // generate the layout HTML
   articles.forEach((article) => {

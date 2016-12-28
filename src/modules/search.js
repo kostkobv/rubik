@@ -30,6 +30,7 @@ SearchModule.prototype.fetch = function (params) {
  */
 SearchModule.prototype.parseArticles = function (res) {
   this.articles = res.body.articles;
+  this.pagesCount = Math.ceil(this.articles.length / this.config.articlesPerPage);
 
   return this.articles;
 };

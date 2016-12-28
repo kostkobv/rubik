@@ -107,10 +107,68 @@ describe('Search View', () => {
   });
 
   describe('pagination', () => {
-    it('should render the controls for available pages');
-    it('should be able to go to previous page');
-    it('should be able to go to next page');
-    it('should make the current page number button active');
+    beforeEach(() => {
+      sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articlesMock.articles));
+
+      searchViewInstance.model.parseArticles({ body: articlesMock });
+      searchViewInstance.renderLayout(0);
+    });
+
+    describe('controls for available pages', () => {
+      it('should render number of pages control that is defined in configuration', () =>
+        expect(document.querySelector(config.selectors.pagination.element).childElementCount)
+          .to.be.equal(2)
+      );
+
+      it('should be able to go to the page that was selected', () => {
+        const lastPage = document.querySelector(config.selectors.pagination.element).lastChild;
+        lastPage.click();
+
+        const lastPageActive = document.querySelector(config.selectors.pagination.element)
+          .lastChild.getAttribute('data-search-active');
+
+        expect(lastPageActive).to.be.equal('true');
+      });
+    });
+
+    it('should be able to go to previous page', () => {
+      const lastPage = document.querySelector(config.selectors.pagination.element).lastChild;
+      lastPage.click();
+
+      const prevPage = document.querySelector(config.selectors.pagination.previous);
+      prevPage.click();
+
+      const firstPageActive = document.querySelector(config.selectors.pagination.element)
+        .firstChild.getAttribute('data-search-active');
+
+      expect(firstPageActive).to.be.equal('true');
+    });
+
+    it('should be able to go to next page', () => {
+      const nextPage = document.querySelector(config.selectors.pagination.next);
+      nextPage.click();
+
+      const lastPageActive = document.querySelector(config.selectors.pagination.element)
+        .lastChild.getAttribute('data-search-active');
+
+      expect(lastPageActive).to.be.equal('true');
+    });
+
+    it('should make the current page number button active', () => {
+      const pagination = document.querySelector(config.selectors.pagination.element);
+
+      expect(pagination.firstChild.getAttribute('data-search-active')).to.be.equal('true');
+      expect(pagination.lastChild.getAttribute('data-search-active')).to.be.equal('false');
+
+      pagination.lastChild.click();
+
+      const lastPageActive = pagination.lastChild.getAttribute('data-search-active');
+      const firstPageActive = pagination.firstChild.getAttribute('data-search-active');
+
+
+      expect(lastPageActive).to.be.equal('true');
+      expect(firstPageActive).to.be.equal('false');
+    });
     it('should disable previous page button if on first page');
     it('should disable next page button if on last page');
   });
