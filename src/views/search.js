@@ -26,6 +26,7 @@ function SearchView(config) {
   this.element = document.querySelector(config.selectors.element);
   this.searchForm = this.element.querySelector(config.selectors.form.element);
   this.searchResults = this.element.querySelector(config.selectors.results.element);
+  this.searchResultsCount = this.element.querySelector(config.selectors.results.count);
 
   // link configs
   this.config = config;
@@ -56,6 +57,7 @@ function parseFormElements(formElements) {
     // get key as the element name
     const name = element.getAttribute('name');
 
+    // TODO: add validation and check schema for data that are coming from form
     if (name) {
       // if name is valid get the value from there
       formData[name] = element.value;
@@ -112,6 +114,19 @@ SearchView.prototype.initListeners = function () {
 };
 
 /**
+ * Renders count of results to layout
+ */
+SearchView.prototype.renderResultsCount = function () {
+  if (!this.searchResultsCount) {
+    return;
+  }
+
+  const resultsCountLayout = this.model.getArticlesCount();
+
+  this.searchResultsCount.innerHTML = resultsCountLayout;
+};
+
+/**
  * Renders the layout with results
  *
  * @param {Number} page - page number that should be rendered
@@ -120,6 +135,9 @@ SearchView.prototype.renderLayout = function (page) {
   // fetch the articles for the current page
   const articles = this.model.getArticles(page);
   let layout = '';
+
+  // render results count to layout
+  this.renderResultsCount();
 
   // generate the layout HTML
   articles.forEach((article) => {

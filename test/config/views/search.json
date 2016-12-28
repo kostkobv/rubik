@@ -6,7 +6,13 @@
       "filters": "select"
     },
     "results": {
-      "element": "[data-search-results]"
+      "element": "[data-search-results]",
+      "count": "[data-search-results-count]"
+    },
+    "pagination": {
+      "element": "[data-search-pagination]",
+      "previous": "[data-search-pagination-prev]",
+      "next": "[data-search-pagination-next]"
     }
   },
   "templates": {

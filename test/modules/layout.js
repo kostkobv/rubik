@@ -2,7 +2,7 @@ import expect from '../requires';
 import layout from '../../src/modules/layout';
 import config from '../config/modules/layout.json';
 
-describe('search module', () => {
+describe('layout module', () => {
   let layoutInstance;
 
   before(() => {

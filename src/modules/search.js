@@ -35,6 +35,18 @@ SearchModule.prototype.parseArticles = function (res) {
 };
 
 /**
+ * Returns count of articles in stack
+ * @returns {Number} - count of articles in stack
+ */
+SearchModule.prototype.getArticlesCount = function () {
+  if (!this.articles) {
+    return 0;
+  }
+
+  return this.articles.length;
+};
+
+/**
  * Returns the start and end indexes for stack slice.
  * If page number is less than 0 it will return indexes for first page
  *

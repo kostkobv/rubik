@@ -30,7 +30,13 @@ describe('Search View', () => {
       '</select>' +
       '<button type="submit"></button>' +
       '</form>' +
+      '<div data-search-results-count></div>' +
       '<div data-search-results></div>' +
+      '<div>' +
+      '<div data-search-pagination-prev></div>' +
+      '<div data-search-pagination></div>' +
+      '<div data-search-pagination-next></div>' +
+      '</div>' +
       '</div>';
 
     searchViewInstance = searchView(config);
@@ -86,5 +92,26 @@ describe('Search View', () => {
 
       return expect(results.innerHTML.length).to.be.not.equal(0);
     });
+
+    it('should show the article count', () => {
+      sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articlesMock.articles));
+
+      const expectedArticlesCount = articlesMock.articles.length.toString();
+
+      searchViewInstance.model.articles = articlesMock.articles;
+      searchViewInstance.renderLayout(0);
+
+      return expect(document.querySelector(config.selectors.results.count).innerHTML)
+        .to.be.equal(expectedArticlesCount);
+    });
+  });
+
+  describe('pagination', () => {
+    it('should render the controls for available pages');
+    it('should be able to go to previous page');
+    it('should be able to go to next page');
+    it('should make the current page number button active');
+    it('should disable previous page button if on first page');
+    it('should disable next page button if on last page');
   });
 });

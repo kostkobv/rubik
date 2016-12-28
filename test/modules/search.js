@@ -42,6 +42,12 @@ describe('search module', () => {
     )
   );
 
+  it('should be able to return count of articles in stack', () =>
+    searchInstance.fetch().then(() =>
+      expect(searchInstance.getArticlesCount()).to.equal(9)
+    )
+  );
+
   describe('pagination', () => {
     it('should be able of return the articles by pages', () => {
       searchInstance.fetch().then(() =>

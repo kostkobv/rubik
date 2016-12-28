@@ -6,8 +6,7 @@ module.exports = {
   debug: false,
 
   entry: {
-    index: './src/index.js',
-    test: './test/index.js'
+    index: './src/index.js'
   },
 
   target: 'async-node',
@@ -17,8 +16,16 @@ module.exports = {
   output: {
     path: './build',
     filename: '[name].js',
-    library: 'babel-webpack-package-boilerplate',
-    libraryTarget: 'commonjs2'
+    library: 'rubik',
+    libraryTarget: 'commonjs2',
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false
+        },
+        sourceMap: true
+      })
+    ]
   },
 
   resolve: {
@@ -33,8 +40,7 @@ module.exports = {
       {
         test: /\.js$/,
         include: [
-          path.resolve(__dirname, './src'),
-          path.resolve(__dirname, './test')
+          path.resolve(__dirname, './src')
         ],
         exclude: /node_modules/,
         loader: 'babel'
