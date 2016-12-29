@@ -1,4 +1,4 @@
-import popsicle,{ plugins } from 'popsicle';
+import popsicle, { plugins } from 'popsicle';
 
 let inited = false;
 let module;
