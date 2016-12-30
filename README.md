@@ -1,6 +1,8 @@
 Rubik
 =================================
 
+[![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
+
 Getting Started
 ---------------
 
