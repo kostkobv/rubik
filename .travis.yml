@@ -2,4 +2,5 @@ language: node_js
 node_js:
   - "7"
 before_script:
+  - "npm run coverage"
   - "npm run upload-coverage"
