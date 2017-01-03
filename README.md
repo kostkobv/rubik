@@ -1,7 +1,5 @@
-<img src="http://icon-park.com/imagefiles/rubiks_cube_mix1-3d.png" width="30" /> Rubik
+<img src="http://icon-park.com/imagefiles/rubiks_cube_mix1-3d.png" width="30" /> Rubik  [![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
 =================================
-
-[![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
 
 Getting Started
 ---------------
