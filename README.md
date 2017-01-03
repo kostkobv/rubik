@@ -1,7 +1,5 @@
-Rubik
+<img src="http://icon-park.com/imagefiles/rubiks_cube_mix1-3d.png" width="30" /> Rubik  [![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
 =================================
-
-[![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
 
 Getting Started
 ---------------
@@ -21,23 +19,12 @@ are placed in the `build` folder. This folder is preserved by npm, but ignored
 by git.
 
 ```bash
-$ npm run-script build
+$ npm run build
 ```
 
 The `pretest`, `prestart`, and `prepublish` scripts defined in the
 `package.json` file all reference the `build` script, so there's no need to run
 the build script manually in those situations.
-
-Running
--------
-
-Run the project with `npm start`.
-
-```bash
-$ npm start
-```
-
-As said before, this will automatically run the build script first.
 
 Testing
 -------
