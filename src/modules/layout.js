@@ -1,4 +1,25 @@
 import objectMerge from 'lodash/merge';
+import requests from './services/requests';
+
+/**
+ * Layout module prototype
+ * @param {Object} config - config for instance that should be created
+ * @constructor
+ */
+function LayoutModule(config) {
+  this.config = config;
+  this.parseArticles(config.articles);
+}
+
+/**
+ * Fetches the data from API
+ *
+ * @returns {Promise} - returns parsed articles
+ */
+LayoutModule.prototype.fetch = function () {
+  return requests().get(this.config.get.endpoint, this.config.get.params)
+    .then(articles => this.parseArticles(articles.body));
+};
 
 /**
  * Parses object with articles into an array that will be used later as stack
@@ -6,7 +27,12 @@ import objectMerge from 'lodash/merge';
  * @param {Object} articles - raw articles
  * @returns {Array} - parsed articles
  */
-function parseArticles(articles) {
+LayoutModule.prototype.parseArticles = function (articles) {
+  if (!articles) {
+    this.stack = [];
+    return this.stack;
+  }
+
   const stack = [];
 
   Object.keys(articles).forEach((index) => {
@@ -17,32 +43,10 @@ function parseArticles(articles) {
     }
   });
 
-  return stack;
-}
+  this.stack = stack;
 
-/**
- * Parses articles from module config
- * @param {Object} config - module object
- * @returns {Array} - parsed articles
- */
-function parseConfig(config) {
-  if (config.articles) {
-    return parseArticles(config.articles);
-  }
-
-  return [];
-}
-
-/**
- * Layout module prototype
- * @param {Object} config - config for instance that should be created
- * @constructor
- */
-function LayoutModule(config) {
-  this.config = config;
-
-  this.stack = parseConfig(config);
-}
+  return this.stack;
+};
 
 /**
  * Pushes article into stack. Shifts all the articles that are coming after

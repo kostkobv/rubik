@@ -17,6 +17,8 @@ function LayoutView(config) {
 
   this.element = document.querySelector(config.selectors.element);
   this.slots = this.element.querySelectorAll(config.selectors.slot);
+
+  this.model.fetch();
 }
 
 export default function init(config) {

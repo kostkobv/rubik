@@ -7,11 +7,18 @@
     "item": "<div></div>"
   },
   "options": {
-    "pagination": {
-      "maxPagesCount": 5
-    }
+
+  },
+  "attributes": {
+    "slot": "data-layout-slot"
   },
   "model": {
+    "get": {
+      "endpoint": "/testget.php",
+      "params": {
+
+      }
+    },
     "articles": {
       "0": {
         "ID": 241,
