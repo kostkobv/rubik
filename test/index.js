@@ -5,3 +5,4 @@ import './modules/layout';
 import './modules/edit';
 
 import './views/search';
+import './views/layout';

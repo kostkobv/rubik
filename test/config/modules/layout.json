@@ -1,6 +1,6 @@
 {
   "get": {
-    "endpoint": "/testget.php",
+    "endpoint": "/testgetlayout.php",
     "params": {
 
     }

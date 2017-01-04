@@ -27,6 +27,12 @@ describe('Layout View', () => {
       '</div>';
 
     layoutViewInstance = LayoutView(config);
+
+    sandbox.stub(layoutViewInstance.model, 'fetch').returns(
+      Promise.resolve(config.model.articles)
+    );
+
+    layoutViewInstance.model.parseArticles(config.model.articles);
   });
 
   it('should create new instance each time', () => {
@@ -41,5 +47,14 @@ describe('Layout View', () => {
     it('should be able to retrieve slots from DOM', () =>
       expect(layoutViewInstance.slots.length).to.be.equal(4)
     );
+
+    it('should be able to render content to the appropriate slots', () => {
+      layoutViewInstance.render();
+
+      const slots = document.querySelectorAll('[data-layout-slot]');
+      const expectedHtml = '<div></div>';
+
+      expect(slots[1].innerHTML).to.be.equal(expectedHtml);
+    });
   });
 });
