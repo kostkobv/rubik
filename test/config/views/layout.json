@@ -1,6 +1,7 @@
 {
   "selectors": {
-    "element": "[data-layout]"
+    "element": "[data-layout]",
+    "slot": "[data-layout-slot]"
   },
   "templates": {
     "item": "<div></div>"

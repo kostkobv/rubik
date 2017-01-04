@@ -19,7 +19,12 @@ describe('Layout View', () => {
   });
 
   beforeEach(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = '<div data-layout>' +
+      '<div data-layout-slot></div>' +
+      '<div data-layout-slot></div>' +
+      '<div data-layout-slot></div>' +
+      '<div data-layout-slot></div>' +
+      '</div>';
 
     layoutViewInstance = LayoutView(config);
   });
@@ -30,5 +35,11 @@ describe('Layout View', () => {
 
     expect(layoutViewInstance).not.contain(testConfig);
     return expect(newLayoutView).not.eql(layoutViewInstance).and.contain(testConfig);
+  });
+
+  describe('slots', () => {
+    it('should be able to retrieve slots from DOM', () =>
+      expect(layoutViewInstance.slots.length).to.be.equal(4)
+    );
   });
 });
