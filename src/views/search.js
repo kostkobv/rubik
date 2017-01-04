@@ -251,7 +251,25 @@ SearchView.prototype.renderPagination = function () {
     });
   }
 
+  this.handlePreviousNextPaginationButtons();
+
   this.paginationPages.innerHTML = layout;
+};
+
+SearchView.prototype.handlePreviousNextPaginationButtons = function () {
+  const actualPage = this.model.page;
+
+  if (actualPage === FIRST_PAGE_INDEX) {
+    this.paginationNextPage.setAttribute('data-disabled', true);
+  } else {
+    this.paginationNextPage.setAttribute('data-disabled', false);
+  }
+
+  if (actualPage === this.model.pagesCount - 1) {
+    this.paginationPreviousPage.setAttribute('data-disabled', true);
+  } else {
+    this.paginationPreviousPage.setAttribute('data-disabled', false);
+  }
 };
 
 /**
