@@ -116,6 +116,23 @@ describe('Search View', () => {
           .to.be.equal(2)
       );
 
+      it('should render active page always in the middle', () => {
+        sandbox.restore();
+
+        const articles = Array(50).fill(articlesMock.articles[0]);
+
+        sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articles));
+
+        searchViewInstance.model.parseArticles({ body: { articles } });
+        searchViewInstance.renderLayout(0);
+
+        const pagination = document.querySelector(config.selectors.pagination.element);
+        pagination.lastChild.click();
+
+        expect(pagination.firstChild.innerHTML).to.be.equal('3');
+        expect(pagination.lastChild.innerHTML).to.be.equal('7');
+      });
+
       it('should be able to go to the page that was selected', () => {
         const lastPage = document.querySelector(config.selectors.pagination.element).lastChild;
         lastPage.click();
@@ -169,30 +186,42 @@ describe('Search View', () => {
       const pagination = document.querySelector(config.selectors.pagination.element);
       const nextButton = document.querySelector(config.selectors.pagination.next);
 
-      expect(nextButton.getAttribute('data-disabled')).to.be.equal('true');
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('false');
 
       pagination.lastChild.click();
 
-      expect(nextButton.getAttribute('data-disabled')).to.be.equal('false');
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('true');
 
       pagination.firstChild.click();
 
-      expect(nextButton.getAttribute('data-disabled')).to.be.equal('true');
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('false');
     });
 
     it('should disable previous page button if on last page', () => {
       const prevButton = document.querySelector(config.selectors.pagination.previous);
       const pagination = document.querySelector(config.selectors.pagination.element);
 
-      expect(prevButton.getAttribute('data-disabled')).to.be.equal('false');
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
 
       pagination.lastChild.click();
 
-      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('false');
 
       pagination.firstChild.click();
 
-      expect(prevButton.getAttribute('data-disabled')).to.be.equal('false');
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+    });
+
+    it('should not go to the previous page if previous button is disabled', () => {
+      const prevButton = document.querySelector(config.selectors.pagination.previous);
+
+      sandbox.spy(searchViewInstance, 'renderLayout');
+
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+
+      prevButton.click();
+
+      expect(searchViewInstance.renderLayout.called).to.be.equal(false);
     });
   });
 });

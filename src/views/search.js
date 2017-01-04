@@ -143,11 +143,19 @@ SearchView.prototype.initPaginationListeners = function () {
       observer.next(parsedClickedPageNumber);
     }
 
-    function nextHandler() {
+    function nextHandler(e) {
+      if (e.target.getAttribute('data-disabled') === 'true') {
+        return;
+      }
+
       observer.next(model.page + 1);
     }
 
-    function prevHandler() {
+    function prevHandler(e) {
+      if (e.target.getAttribute('data-disabled') === 'true') {
+        return;
+      }
+
       observer.next(model.page - 1);
     }
 
@@ -189,7 +197,7 @@ SearchView.prototype.renderResultsCount = function () {
  * @returns {{ firstPageToRenderIndex: Number, lastPageToRenderIndex: Number }} - first page that
  *      should be rendered in pagination index
  */
-function getFirstPageToRenderIndex(params) {
+function getFirstLastPageToRenderIndex(params) {
   // destructuring needed parameters from passed argument
   const { pagesCount, articlesPerPage, actualPageNumber, maxPagesCount } = params;
 
@@ -207,7 +215,8 @@ function getFirstPageToRenderIndex(params) {
   } else if (actualPageNumber <= articlesNumberShift) {
     // also do not shift it
     firstPageToRenderIndex = FIRST_PAGE_INDEX;
-    lastPageToRenderIndex = maxPagesCount;
+    // indexation starts from zero
+    lastPageToRenderIndex = maxPagesCount - 1;
   }
 
   // if calculated index is smaller than first page index (because number of pages is smaller than
@@ -216,8 +225,8 @@ function getFirstPageToRenderIndex(params) {
     firstPageToRenderIndex = FIRST_PAGE_INDEX;
   }
 
-  if (lastPageToRenderIndex > pagesCount) {
-    lastPageToRenderIndex = pagesCount;
+  if (lastPageToRenderIndex > pagesCount - 1) {
+    lastPageToRenderIndex = pagesCount - 1;
   }
 
   return { firstPageToRenderIndex, lastPageToRenderIndex };
@@ -232,7 +241,7 @@ SearchView.prototype.renderPagination = function () {
   const maxPagesCount = this.config.options.pagination.maxPagesCount;
   const pagesCount = this.model.pagesCount;
 
-  const pagesToRenderIndex = getFirstPageToRenderIndex({
+  const pagesToRenderIndex = getFirstLastPageToRenderIndex({
     pagesCount,
     articlesPerPage,
     actualPageNumber,
@@ -242,7 +251,7 @@ SearchView.prototype.renderPagination = function () {
   let layout = '';
   const { firstPageToRenderIndex, lastPageToRenderIndex } = pagesToRenderIndex;
 
-  for (let pageIndex = firstPageToRenderIndex; pageIndex < lastPageToRenderIndex; pageIndex += 1) {
+  for (let pageIndex = firstPageToRenderIndex; pageIndex <= lastPageToRenderIndex; pageIndex += 1) {
     layout += this.renderPage({
       page: {
         active: pageIndex === actualPageNumber,
@@ -256,16 +265,19 @@ SearchView.prototype.renderPagination = function () {
   this.paginationPages.innerHTML = layout;
 };
 
+/**
+ * Handles the active/non-active state of the previous and next buttons in pagination
+ */
 SearchView.prototype.handlePreviousNextPaginationButtons = function () {
   const actualPage = this.model.page;
 
-  if (actualPage === FIRST_PAGE_INDEX) {
+  if (actualPage === this.model.pagesCount - 1) {
     this.paginationNextPage.setAttribute('data-disabled', true);
   } else {
     this.paginationNextPage.setAttribute('data-disabled', false);
   }
 
-  if (actualPage === this.model.pagesCount - 1) {
+  if (actualPage === FIRST_PAGE_INDEX) {
     this.paginationPreviousPage.setAttribute('data-disabled', true);
   } else {
     this.paginationPreviousPage.setAttribute('data-disabled', false);
