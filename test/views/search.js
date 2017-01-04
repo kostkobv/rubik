@@ -100,6 +100,13 @@ describe('Search View', () => {
       return expect(document.querySelector(config.selectors.results.count).innerHTML)
         .to.be.equal(expectedArticlesCount);
     });
+
+    it('should has draggable results', () => {
+      const articlesNodeList = document.querySelector(config.selectors.results.element).children;
+
+      expect(articlesNodeList[0].getAttribute('draggable')).to.be.equal('true');
+      expect(articlesNodeList[1].getAttribute('draggable')).to.be.equal('true');
+    });
   });
 
   describe('pagination', () => {

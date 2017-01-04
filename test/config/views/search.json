@@ -16,7 +16,7 @@
     }
   },
   "templates": {
-    "result": "<div><%- article.post_title %></div>",
+    "result": "<div draggable='true'><%- article.post_title %></div>",
     "page": "<div data-search-active='<%- page.active %>' data-search-page='<%- page.number %>'><%- page.number + 1 %></div>"
   },
   "options": {
