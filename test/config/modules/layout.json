@@ -1,4 +1,10 @@
 {
+  "get": {
+    "endpoint": "/testgetlayout.php",
+    "params": {
+
+    }
+  },
   "articles": {
     "0": {
       "ID": 241,

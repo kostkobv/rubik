@@ -82,27 +82,30 @@ describe('Search View', () => {
   });
 
   describe('results', () => {
-    it('should render the results to the appropriate container', () => {
+    beforeEach(() => {
       sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articlesMock.articles));
+      searchViewInstance.model.parseArticles({ body: articlesMock });
 
-      searchViewInstance.model.articles = articlesMock.articles;
       searchViewInstance.renderLayout(0);
-
+    });
+    it('should render the results to the appropriate container', () => {
       const results = searchViewInstance.searchResults;
 
       return expect(results.innerHTML.length).to.be.not.equal(0);
     });
 
     it('should show the article count', () => {
-      sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articlesMock.articles));
-
       const expectedArticlesCount = articlesMock.articles.length.toString();
-
-      searchViewInstance.model.articles = articlesMock.articles;
-      searchViewInstance.renderLayout(0);
 
       return expect(document.querySelector(config.selectors.results.count).innerHTML)
         .to.be.equal(expectedArticlesCount);
+    });
+
+    it('should has draggable results', () => {
+      const articlesNodeList = document.querySelector(config.selectors.results.element).children;
+
+      expect(articlesNodeList[0].getAttribute('draggable')).to.be.equal('true');
+      expect(articlesNodeList[1].getAttribute('draggable')).to.be.equal('true');
     });
   });
 
@@ -119,6 +122,23 @@ describe('Search View', () => {
         expect(document.querySelector(config.selectors.pagination.element).childElementCount)
           .to.be.equal(2)
       );
+
+      it('should render active page always in the middle', () => {
+        sandbox.restore();
+
+        const articles = Array(50).fill(articlesMock.articles[0]);
+
+        sandbox.stub(searchViewInstance.model, 'fetch').returns(Promise.resolve(articles));
+
+        searchViewInstance.model.parseArticles({ body: { articles } });
+        searchViewInstance.renderLayout(0);
+
+        const pagination = document.querySelector(config.selectors.pagination.element);
+        pagination.lastChild.click();
+
+        expect(pagination.firstChild.innerHTML).to.be.equal('3');
+        expect(pagination.lastChild.innerHTML).to.be.equal('7');
+      });
 
       it('should be able to go to the page that was selected', () => {
         const lastPage = document.querySelector(config.selectors.pagination.element).lastChild;
@@ -165,11 +185,50 @@ describe('Search View', () => {
       const lastPageActive = pagination.lastChild.getAttribute('data-search-active');
       const firstPageActive = pagination.firstChild.getAttribute('data-search-active');
 
-
       expect(lastPageActive).to.be.equal('true');
       expect(firstPageActive).to.be.equal('false');
     });
-    it('should disable previous page button if on first page');
-    it('should disable next page button if on last page');
+
+    it('should disable next page button if on first page', () => {
+      const pagination = document.querySelector(config.selectors.pagination.element);
+      const nextButton = document.querySelector(config.selectors.pagination.next);
+
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('false');
+
+      pagination.lastChild.click();
+
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('true');
+
+      pagination.firstChild.click();
+
+      expect(nextButton.getAttribute('data-disabled')).to.be.equal('false');
+    });
+
+    it('should disable previous page button if on last page', () => {
+      const prevButton = document.querySelector(config.selectors.pagination.previous);
+      const pagination = document.querySelector(config.selectors.pagination.element);
+
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+
+      pagination.lastChild.click();
+
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('false');
+
+      pagination.firstChild.click();
+
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+    });
+
+    it('should not go to the previous page if previous button is disabled', () => {
+      const prevButton = document.querySelector(config.selectors.pagination.previous);
+
+      sandbox.spy(searchViewInstance, 'renderLayout');
+
+      expect(prevButton.getAttribute('data-disabled')).to.be.equal('true');
+
+      prevButton.click();
+
+      expect(searchViewInstance.renderLayout.called).to.be.equal(false);
+    });
   });
 });

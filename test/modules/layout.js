@@ -1,13 +1,21 @@
-import expect from '../requires';
+import sinon from 'sinon';
+import expect, { nock } from '../requires';
 import layout from '../../src/modules/layout';
 import config from '../config/modules/layout.json';
+import requestConfigs from '../config/modules/services/requests.json';
+import request from '../../src/modules/services/requests';
 
 describe('layout module', () => {
   let layoutInstance;
+  const sandbox = sinon.sandbox.create();
 
-  before(() => {
+  before(() => request(requestConfigs));
+
+  beforeEach(() => {
     layoutInstance = layout(config);
   });
+
+  afterEach(() => sandbox.restore());
 
   it('should create new instance each time', () => {
     const testConfig = { test: 'test' };
@@ -21,11 +29,27 @@ describe('layout module', () => {
     expect(layoutInstance).to.have.property('stack');
   });
 
-  describe('stack', () => {
-    beforeEach(() => {
-      layoutInstance = layout(config);
-    });
+  describe('fetch', () => {
+    beforeEach(() =>
+      nock
+        .get(config.get.endpoint)
+        .query(config.get.params)
+        .reply(200, config.articles)
+    );
 
+    it('should be able to fetch articles from API', (done) => {
+      sandbox.spy(layoutInstance, 'parseArticles');
+
+      layoutInstance.fetch().then(() => {
+        expect(layoutInstance.stack.length).to.be.equal(10);
+        expect(layoutInstance.parseArticles.calledOnce).to.be.equal(true);
+
+        done();
+      });
+    });
+  });
+
+  describe('stack', () => {
     it('should be able to add elements to the stack from the config', () => {
       expect(layoutInstance.stack.length).to.be.equal(10);
     });
