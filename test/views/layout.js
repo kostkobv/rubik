@@ -48,13 +48,27 @@ describe('Layout View', () => {
       expect(layoutViewInstance.slots.length).to.be.equal(4)
     );
 
-    it('should be able to render content to the appropriate slots', () => {
-      layoutViewInstance.render();
+    describe('render', () => {
+      let slots;
 
-      const slots = document.querySelectorAll('[data-layout-slot]');
-      const expectedHtml = '<div></div>';
+      beforeEach(() => {
+        slots = document.querySelectorAll('[data-layout-slot]');
+        layoutViewInstance.render();
+      });
 
-      expect(slots[1].innerHTML).to.be.equal(expectedHtml);
+      it('should be able to render content to the appropriate slots', () => {
+        const expectedHtml = '<div>title240</div>';
+
+        expect(slots[1].innerHTML).to.be.equal(expectedHtml);
+      });
+
+      it('should be able to render separate item', () => {
+        const item = { content: { title: 'title' } };
+        layoutViewInstance.dropItem(item, 1);
+
+        expect(slots[1].innerHTML).to.be.equal(`<div>${item.content.title}</div>`);
+        expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
+      });
     });
   });
 });
