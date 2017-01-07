@@ -19,12 +19,40 @@ function LayoutView(config) {
   this.slots = this.element.querySelectorAll(config.selectors.slot);
 
   this.initClickListeners();
-  // this.initLayoutDropListeners()
-  //   .forEach(item => this.dropItem(item));
+  this.initLayoutDropListeners().forEach((slot, data) => {
+    const index = this.getSlotIndex(slot);
+    this.dropItem(data, index);
+  });
 
   this.initLayoutRemoveListeners()
     .forEach(item => this.removeItem(item));
 }
+
+LayoutView.prototype.initLayoutDropListeners = function () {
+  this.dropLayoutStream = new Observable((observer) => {
+    function handler(e) {
+      const target = e.target;
+
+      if (!target.hasAttribute(this.config.attributes.slot)) {
+        return;
+      }
+
+      // retrieve droppable data
+      const data = e.dataTransfer.getData('text');
+      const unparsedData = JSON.parse(data);
+
+      observer.next(target, unparsedData);
+    }
+
+    this.element.addEventListener('drop', e => handler(e));
+
+    return () => {
+      this.element.removeEventListener('drop', handler);
+    };
+  });
+
+  return this.dropLayoutStream;
+};
 
 /**
  * Creates the stream with all the remove item events
@@ -90,7 +118,7 @@ LayoutView.prototype.removeItem = function (item) {
   }
 
   // get the index of the slot
-  const itemIndex = Array.prototype.indexOf.call(this.slots, slot);
+  const itemIndex = this.getSlotIndex(slot);
 
   if (itemIndex === -1) {
     return;
@@ -100,6 +128,10 @@ LayoutView.prototype.removeItem = function (item) {
   this.renderEmpty(itemIndex);
   // remove from the stack
   this.model.removeArticle(itemIndex);
+};
+
+LayoutView.prototype.getSlotIndex = function (slot) {
+  return Array.prototype.indexOf.call(this.slots, slot);
 };
 
 /**
