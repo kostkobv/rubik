@@ -1,5 +1,5 @@
 import compileTemplate from 'lodash/template';
-// import Observable from 'zen-observable';
+import Observable from 'zen-observable';
 import LayoutModule from '../modules/layout';
 
 function LayoutView(config) {
@@ -17,7 +17,105 @@ function LayoutView(config) {
 
   this.element = document.querySelector(config.selectors.element);
   this.slots = this.element.querySelectorAll(config.selectors.slot);
+
+  this.initClickListeners();
+  // this.initLayoutDropListeners()
+  //   .forEach(item => this.dropItem(item));
+
+  this.initLayoutRemoveListeners()
+    .forEach(item => this.removeItem(item));
 }
+
+/**
+ * Creates the stream with all the remove item events
+ * @returns {Observer} - observer with remove item events
+ */
+LayoutView.prototype.initLayoutRemoveListeners = function () {
+  const removeItemAttribute = this.config.attributes.remove;
+  return this.layoutEventStream.filter(item => item.hasAttribute(removeItemAttribute));
+};
+
+/**
+ * Creates the stream with all the click events within the layout view
+ */
+LayoutView.prototype.initClickListeners = function () {
+  this.layoutEventStream = new Observable((observer) => {
+    function handler(e) {
+      const target = e.target;
+
+      observer.next(target);
+    }
+
+    this.element.addEventListener('click', e => handler(e));
+
+    return () => {
+      this.slots.removeEventListener('click', handler);
+    };
+  });
+};
+
+/**
+ * Gets the slot where item is currently rendered
+ * @private
+ * @param {Node} item - layout item
+ * @param {String} slotAttributeName - slot attribute name
+ * @returns {Node} - layout slot where item is rendered
+ */
+function getItemSlot(item, slotAttributeName) {
+  // do not go higher than this level of parentness
+  const LIMIT = 5;
+  let parent = item.parentNode;
+
+  for (let index = 0; index < LIMIT; index += 1) {
+    if (parent.hasAttribute(slotAttributeName)) {
+      return parent;
+    }
+
+    parent = parent.parentNode;
+  }
+
+  return null;
+}
+
+/**
+ * Removes item from the layout
+ * @param {Node} item - item that should be removed
+ */
+LayoutView.prototype.removeItem = function (item) {
+  // get the Node of the slot where item "lives"
+  const slot = getItemSlot(item, this.config.attributes.slot);
+
+  if (!slot) {
+    return;
+  }
+
+  // get the index of the slot
+  const itemIndex = Array.prototype.indexOf.call(this.slots, slot);
+
+  if (itemIndex === -1) {
+    return;
+  }
+
+  // render the fallback
+  this.renderEmpty(itemIndex);
+  // remove from the stack
+  this.model.removeArticle(itemIndex);
+};
+
+/**
+ * Renders fallback content into empty slot
+ * @param {Number} index - index of the slot that should be emptied
+ */
+LayoutView.prototype.renderEmpty = function (index) {
+  const slot = this.slots[index];
+
+  // if there is no slot or there is a need of empty template re-render - break
+  if (!slot || slot.innerHTML === this.config.templates.empty) {
+    return;
+  }
+
+  slot.innerHTML = this.config.templates.empty;
+};
 
 /**
  * Renders the item from the stack to the layout
@@ -27,7 +125,12 @@ LayoutView.prototype.renderItem = function (index) {
   const item = this.model.stack[index];
   const slot = this.slots[index];
 
-  if (!slot || !item) {
+  if (!slot) {
+    return;
+  }
+
+  if (!item) {
+    this.renderEmpty(index);
     return;
   }
 
@@ -63,6 +166,7 @@ LayoutView.prototype.render = function (startIndex = 0) {
 LayoutView.prototype.dropItem = function (item, slotIndex) {
   const actualSlotContent = this.model.stack[slotIndex];
 
+  // if slot is empty
   if (!actualSlotContent) {
     this.model.stack[slotIndex] = item;
     this.slots[slotIndex] = this.renderSlot(item);
