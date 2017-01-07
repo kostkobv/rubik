@@ -56,8 +56,14 @@ describe('Layout View', () => {
         layoutViewInstance.render();
       });
 
+      it('should render empty slot view if appropriate slot in stack is empty', () => {
+        const emptySlot = slots[3];
+
+        expect(emptySlot.innerHTML).to.be.equal(config.templates.empty);
+      });
+
       it('should be able to render content to the appropriate slots', () => {
-        const expectedHtml = '<div>title240</div>';
+        const expectedHtml = '<div data-layout-item=""><div data-layout-item-remove=""></div>title240</div>';
 
         expect(slots[1].innerHTML).to.be.equal(expectedHtml);
       });
@@ -66,8 +72,21 @@ describe('Layout View', () => {
         const item = { content: { title: 'title' } };
         layoutViewInstance.dropItem(item, 1);
 
-        expect(slots[1].innerHTML).to.be.equal(`<div>${item.content.title}</div>`);
+        expect(slots[1].innerHTML)
+          .to.be.equal(`<div data-layout-item=""><div data-layout-item-remove=""></div>${item.content.title}</div>`);
         expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
+      });
+
+      describe('delete', () => {
+        it('should be able to remove item from the layout', () => {
+          const item = slots[0];
+          const deleteItem = item.querySelector('[data-layout-item-remove]');
+
+          deleteItem.click();
+
+          expect(item.innerHTML).to.be.equal(config.templates.empty);
+          return expect(layoutViewInstance.model.stack[0]).not.to.be.defined;
+        });
       });
     });
   });

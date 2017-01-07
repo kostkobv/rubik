@@ -4,13 +4,16 @@
     "slot": "[data-layout-slot]"
   },
   "templates": {
-    "item": "<div><%- content.title %></div>"
+    "item": "<div data-layout-item><div data-layout-item-remove></div><%- content.title %></div>",
+    "empty": "Here can be your item"
   },
   "options": {
 
   },
   "attributes": {
-    "slot": "data-layout-slot"
+    "slot": "data-layout-slot",
+    "remove": "data-layout-item-remove",
+    "item": "data-layout-item"
   },
   "model": {
     "get": {

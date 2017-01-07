@@ -48,6 +48,12 @@ describe('search module', () => {
     )
   );
 
+  it('should be able to get item from page by id', () => {
+    searchInstance.fetch().then(() =>
+      expect(searchInstance.getArticle(214).post_name).to.equal('opec-knuser-rekordnivaer-pa-produksjon')
+    );
+  });
+
   describe('pagination', () => {
     it('should be able of return the articles by pages', () => {
       searchInstance.fetch().then(() =>

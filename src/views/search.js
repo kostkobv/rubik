@@ -42,7 +42,43 @@ function SearchView(config) {
   );
 
   this.initPaginationListeners().subscribe(pageNumber => this.renderLayout(pageNumber));
+
+  this.initDragItemListeners().forEach(e => this.attachDataToDragEvent(e));
 }
+
+/**
+ * Handles the drag of the result and attaches data to the event itself
+ * @param {Event} event - drag event of the result
+ */
+SearchView.prototype.attachDataToDragEvent = function (event) {
+  const itemId = event.target.getAttribute(this.config.attributes.result);
+  const itemData = this.model.getArticle(itemId);
+  const stringifiedItemData = JSON.stringify(itemData);
+
+  event.dataTransfer.setData('text/plain', stringifiedItemData);
+  event.dataTransfer.dropEffect = 'copy'; // eslint-disable-line no-param-reassign
+};
+
+
+SearchView.prototype.initDragItemListeners = function () {
+  this.dragItemEventsStream = new Observable((observer) => {
+    function handler(e) {
+      const target = e.target;
+
+      if (target.hasAttribute(this.config.attributes.result)) {
+        observer.next(e);
+      }
+    }
+
+    this.searchResults.addEventListener('dragstart', e => handler(e));
+
+    return () => {
+      this.searchResults.removeEventListener('dragstart', handler);
+    };
+  });
+
+  return this.dragItemEventsStream;
+};
 
 /**
  * Fetches the data from model and renders the layout by default on the 0 page
@@ -131,9 +167,11 @@ SearchView.prototype.initFormListeners = function () {
 SearchView.prototype.initPaginationListeners = function () {
   return new Observable((observer) => {
     const model = this.model;
+    const searchPageAttribute = this.config.attributes.searchPage;
+    const disabledResult = this.config.attributes.disabledResult;
 
     function handler(e) {
-      const clickedPageNumber = e.target.getAttribute('data-search-page');
+      const clickedPageNumber = e.target.getAttribute(searchPageAttribute);
       const parsedClickedPageNumber = parseInt(clickedPageNumber, 10);
 
       if (parsedClickedPageNumber < 0 || parsedClickedPageNumber === model.page) {
@@ -144,7 +182,7 @@ SearchView.prototype.initPaginationListeners = function () {
     }
 
     function nextHandler(e) {
-      if (e.target.getAttribute('data-disabled') === 'true') {
+      if (e.target.getAttribute(disabledResult) === 'true') {
         return;
       }
 
@@ -152,7 +190,7 @@ SearchView.prototype.initPaginationListeners = function () {
     }
 
     function prevHandler(e) {
-      if (e.target.getAttribute('data-disabled') === 'true') {
+      if (e.target.getAttribute(disabledResult) === 'true') {
         return;
       }
 
@@ -270,17 +308,18 @@ SearchView.prototype.renderPagination = function () {
  */
 SearchView.prototype.handlePreviousNextPaginationButtons = function () {
   const actualPage = this.model.page;
+  const dataDisabled = this.config.attributes.disabledResult;
 
   if (actualPage === this.model.pagesCount - 1) {
-    this.paginationNextPage.setAttribute('data-disabled', true);
+    this.paginationNextPage.setAttribute(dataDisabled, true);
   } else {
-    this.paginationNextPage.setAttribute('data-disabled', false);
+    this.paginationNextPage.setAttribute(dataDisabled, false);
   }
 
   if (actualPage === FIRST_PAGE_INDEX) {
-    this.paginationPreviousPage.setAttribute('data-disabled', true);
+    this.paginationPreviousPage.setAttribute(dataDisabled, true);
   } else {
-    this.paginationPreviousPage.setAttribute('data-disabled', false);
+    this.paginationPreviousPage.setAttribute(dataDisabled, false);
   }
 };
 

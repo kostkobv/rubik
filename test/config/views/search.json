@@ -16,8 +16,13 @@
     }
   },
   "templates": {
-    "result": "<div draggable='true'><%- article.post_title %></div>",
+    "result": "<div draggable='true' data-search-results='%- article.ID %'><%- article.post_title %></div>",
     "page": "<div data-search-active='<%- page.active %>' data-search-page='<%- page.number %>'><%- page.number + 1 %></div>"
+  },
+  "attributes": {
+    "result": "data-search-results",
+    "disabledResult": "data-disabled",
+    "searchPage": "data-search-page"
   },
   "options": {
     "pagination": {
