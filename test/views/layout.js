@@ -68,13 +68,42 @@ describe('Layout View', () => {
         expect(slots[1].innerHTML).to.be.equal(expectedHtml);
       });
 
-      it('should be able to render separate item', () => {
-        const item = { content: { title: 'title' } };
-        layoutViewInstance.dropItem(item, 1);
+      describe('drop', () => {
+        it('should be able to render separate item', () => {
+          const item = { content: { title: 'title' } };
+          layoutViewInstance.dropItem(item, 1);
 
-        expect(slots[1].innerHTML)
-          .to.be.equal(`<div data-layout-item=""><div data-layout-item-remove=""></div>${item.content.title}</div>`);
-        expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
+          expect(slots[1].innerHTML)
+            .to.be.equal(`<div data-layout-item=""><div data-layout-item-remove=""></div>${item.content.title}</div>`);
+          expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
+        });
+
+        it('should move the article from the dropped zone if it was not empty', () => {
+          const oldItem = slots[1].innerHTML;
+          const oldItemFromStack = layoutViewInstance.model.stack[1].content.title;
+          const nextOldItem = slots[2].innerHTML;
+          const nextOldItemFromStack = layoutViewInstance.model.stack[2].content.title;
+          const item = { content: { title: 'title' } };
+          layoutViewInstance.dropItem(item, 1);
+
+          expect(slots[2].innerHTML).to.be.equal(oldItem);
+          expect(layoutViewInstance.model.stack[2].content.title).to.be.equal(oldItemFromStack);
+          expect(slots[3].innerHTML).to.be.equal(nextOldItem);
+          expect(layoutViewInstance.model.stack[3].content.title).to.be.equal(nextOldItemFromStack);
+        });
+
+        it('should render only the slot if slot was empty', () => {
+          const item = { content: { title: 'title' } };
+          layoutViewInstance.removeItem(slots[1].querySelector(`[${config.attributes.item}]`));
+
+          sandbox.spy(layoutViewInstance, 'renderSlot');
+          sandbox.spy(layoutViewInstance, 'render');
+
+          layoutViewInstance.dropItem(item, 1);
+
+          expect(layoutViewInstance.render.called).to.be.equal(false);
+          return expect(layoutViewInstance.renderSlot.called).to.be.true;
+        });
       });
 
       describe('delete', () => {

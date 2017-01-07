@@ -202,14 +202,13 @@ LayoutView.prototype.render = function (startIndex = 0) {
 LayoutView.prototype.dropItem = function (item, slotIndex) {
   const actualSlotContent = this.model.stack[slotIndex];
 
+  this.model.pushArticle(slotIndex, item);
+
   // if slot is empty
   if (!actualSlotContent) {
-    this.model.stack[slotIndex] = item;
     this.slots[slotIndex] = this.renderSlot(item);
     return;
   }
-
-  this.model.pushArticle(slotIndex, item);
 
   // render everything after the changed item in the stack if the slot wasn't empty
   this.render(slotIndex);
