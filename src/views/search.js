@@ -70,10 +70,10 @@ SearchView.prototype.initDragItemListeners = function () {
       }
     }
 
-    this.searchResults.addEventListener('drag', e => handler(e));
+    this.searchResults.addEventListener('dragstart', e => handler(e));
 
     return () => {
-      this.searchResults.removeEventListener('drag', handler);
+      this.searchResults.removeEventListener('dragstart', handler);
     };
   });
 
