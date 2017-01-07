@@ -48,6 +48,13 @@ describe('search module', () => {
     )
   );
 
+  it('should return zero as articles count if there are no articles', () =>
+    searchInstance.fetch().then(() => {
+      searchInstance.articles = [];
+      return expect(searchInstance.getArticlesCount()).to.equal(0);
+    })
+  );
+
   it('should be able to get item from page by id', () =>
     searchInstance.fetch().then(() =>
       expect(searchInstance.getArticle(214).post_name).to.equal('opec-knuser-rekordnivaer-pa-produksjon')
