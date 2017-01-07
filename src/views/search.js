@@ -167,9 +167,11 @@ SearchView.prototype.initFormListeners = function () {
 SearchView.prototype.initPaginationListeners = function () {
   return new Observable((observer) => {
     const model = this.model;
+    const searchPageAttribute = this.config.attributes.searchPage;
+    const disabledResult = this.config.attributes.disabledResult;
 
     function handler(e) {
-      const clickedPageNumber = e.target.getAttribute(this.config.attributes.searchPage);
+      const clickedPageNumber = e.target.getAttribute(searchPageAttribute);
       const parsedClickedPageNumber = parseInt(clickedPageNumber, 10);
 
       if (parsedClickedPageNumber < 0 || parsedClickedPageNumber === model.page) {
@@ -180,7 +182,7 @@ SearchView.prototype.initPaginationListeners = function () {
     }
 
     function nextHandler(e) {
-      if (e.target.getAttribute(this.config.attributes.disabledResult) === 'true') {
+      if (e.target.getAttribute(disabledResult) === 'true') {
         return;
       }
 
@@ -188,7 +190,7 @@ SearchView.prototype.initPaginationListeners = function () {
     }
 
     function prevHandler(e) {
-      if (e.target.getAttribute(this.config.attributes.disabledResult) === 'true') {
+      if (e.target.getAttribute(disabledResult) === 'true') {
         return;
       }
 
