@@ -9,7 +9,7 @@ module.exports = {
     index: './src/index.js'
   },
 
-  target: 'async-node',
+  target: 'web',
 
   devtool: 'source-map',
 
@@ -24,7 +24,8 @@ module.exports = {
           warnings: false
         },
         sourceMap: true
-      })
+      }),
+      new webpack.optimize.DedupePlugin()
     ]
   },
 
