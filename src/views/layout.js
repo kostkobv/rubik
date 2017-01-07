@@ -28,6 +28,10 @@ function LayoutView(config) {
     .forEach(item => this.removeItem(item));
 }
 
+/**
+ * Creates stream with dropped items
+ * @returns {Observable} - stream with dropped items
+ */
 LayoutView.prototype.initLayoutDropListeners = function () {
   this.dropLayoutStream = new Observable((observer) => {
     function handler(e) {
