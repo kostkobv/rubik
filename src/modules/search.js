@@ -117,6 +117,26 @@ SearchModule.prototype.previousPage = function () {
   return this.getArticles(previousPageNumber);
 };
 
+/**
+ * Gets article from the actual page by id.
+ * If article with provided id is not on this page - null is returned
+ * @param {Number} id - article id
+ * @returns {?Object} - article item
+ */
+SearchModule.prototype.getArticle = function (id) {
+  const actualPage = this.getArticles(this.page);
+
+  for (let index = 0; index < actualPage.length; index += 1) {
+    const item = actualPage[index];
+
+    if (item.ID === id) {
+      return item;
+    }
+  }
+
+  return null;
+};
+
 export default function init(config) {
   return new SearchModule(config);
 }
