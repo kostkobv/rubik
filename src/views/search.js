@@ -126,7 +126,9 @@ SearchView.prototype.initFormListeners = function () {
     const searchFormFilters = this.searchForm.querySelectorAll(this.config.selectors.form.filters);
 
     // init handler for submition
-    const handler = () => {
+    const handler = (e) => {
+      e.preventDefault();
+
       // parse elements
       const values = parseFormElements(formElements);
 
