@@ -144,7 +144,7 @@ SearchView.prototype.initFormListeners = function () {
       }
 
       // and then submit event is triggered
-      handler();
+      handler(event);
     };
 
     // listen for submit and change events
