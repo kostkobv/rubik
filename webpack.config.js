@@ -16,8 +16,8 @@ module.exports = {
   output: {
     path: './build',
     filename: '[name].js',
+    libraryTarget: 'var',
     library: 'rubik',
-    libraryTarget: 'commonjs2',
     plugins: [
       new webpack.optimize.UglifyJsPlugin({
         compress: {

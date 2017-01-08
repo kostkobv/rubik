@@ -1,4 +1,4 @@
-import popsicle, { plugins } from 'popsicle';
+const popsicle = require('popsicle');
 
 let inited = false;
 let module;
@@ -10,8 +10,13 @@ let module;
  * @returns {Promise} - outcome of the request
  */
 function get(url, params) {
-  return popsicle({ url: `${module.config.domain}${url}`, method: 'GET', body: params })
-    .use(plugins.parse('json'));
+  return popsicle.get({
+    url: `${url}`,
+    query: params,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }).use(popsicle.plugins.parse(['json', 'urlencoded']));
 }
 
 /**
