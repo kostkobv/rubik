@@ -11,13 +11,12 @@ let module;
  */
 function get(url, params) {
   return popsicle.get({
-      url: `${url}`,
-      query: params,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-    .use(plugins.parse(['json', 'urlencoded']));
+    url: `${url}`,
+    query: params,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }).use(popsicle.plugins.parse(['json', 'urlencoded']));
 }
 
 /**
