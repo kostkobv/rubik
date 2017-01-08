@@ -1,3 +1,9 @@
+import requests from './modules/services/requests';
 import SearchView from './views/search';
+import LayoutView from './views/layout';
 
-SearchView({});
+export default {
+  requests,
+  SearchView,
+  LayoutView
+};
