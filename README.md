@@ -1,7 +1,7 @@
 <img src="http://icon-park.com/imagefiles/rubiks_cube_mix1-3d.png" width="30" /> Rubik  
 =================================
 
-[![Build Status](https://travis-ci.org/kostkobv/rubik.svg?branch=master)](https://travis-ci.org/kostkobv/rubik) [![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=travis)](https://coveralls.io/github/kostkobv/rubik?branch=travis)
+[![Build Status](https://travis-ci.org/kostkobv/rubik.svg?branch=master)](https://travis-ci.org/kostkobv/rubik) [![Coverage Status](https://coveralls.io/repos/github/kostkobv/rubik/badge.svg?branch=master)](https://coveralls.io/github/kostkobv/rubik?branch=master)
 
 ---------------
 
