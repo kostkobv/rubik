@@ -59,13 +59,18 @@ SearchView.prototype.attachDataToDragEvent = function (event) {
   event.dataTransfer.dropEffect = 'copy'; // eslint-disable-line no-param-reassign
 };
 
-
+/**
+ * Creates stream with drag listeners events
+ * @returns {Observable} - drag listeners observable
+ */
 SearchView.prototype.initDragItemListeners = function () {
+  const config = this.config;
+
   this.dragItemEventsStream = new Observable((observer) => {
     function handler(e) {
       const target = e.target;
 
-      if (target.hasAttribute(this.config.attributes.result)) {
+      if (target.hasAttribute(config.attributes.result)) {
         observer.next(e);
       }
     }
