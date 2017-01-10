@@ -33,11 +33,13 @@ function LayoutView(config) {
  * @returns {Observable} - stream with dropped items
  */
 LayoutView.prototype.initLayoutDropListeners = function () {
+  const config = this.config;
+
   this.dropLayoutStream = new Observable((observer) => {
     function handler(e) {
       const target = e.target;
 
-      if (!target.hasAttribute(this.config.attributes.slot)) {
+      if (!target.hasAttribute(config.attributes.slot)) {
         return;
       }
 
