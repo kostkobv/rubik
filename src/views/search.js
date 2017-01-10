@@ -52,7 +52,8 @@ function SearchView(config) {
  */
 SearchView.prototype.attachDataToDragEvent = function (event) {
   const itemId = event.target.getAttribute(this.config.attributes.result);
-  const itemData = this.model.getArticle(itemId);
+  const parsedId = parseInt(itemId, 10);
+  const itemData = this.model.getArticle(parsedId);
   const stringifiedItemData = JSON.stringify(itemData);
 
   event.dataTransfer.setData('text/plain', stringifiedItemData);
