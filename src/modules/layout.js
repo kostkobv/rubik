@@ -49,6 +49,21 @@ LayoutModule.prototype.parseArticles = function (articles) {
 };
 
 /**
+ * Returns the article from stack by index
+ * @param {Number} index - index of item that should be returned
+ * @returns {?Object} - article
+ */
+LayoutModule.prototype.getArticle = function (index) {
+  const item = this.stack[index];
+
+  if (!item) {
+    return null;
+  }
+
+  return item;
+};
+
+/**
  * Pushes article into stack. Shifts all the articles that are coming after
  * the slot if slot was not empty. Just places the article into the slot
  * if slot previously was empty

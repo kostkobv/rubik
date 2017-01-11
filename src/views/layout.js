@@ -42,15 +42,74 @@ function LayoutView(config) {
   this.slots = this.element.querySelectorAll(config.selectors.slot);
 
   this.initClickListeners();
+
   this.initLayoutDropListeners().forEach((res) => {
-    const { slot, data } = res;
+    const { slot, data, source } = res;
+
+    // if data was moved within layout
+    if (!Number.isNaN(source)) {
+      // remove the source
+      this.removeItem(this.slots[source]);
+    }
+
     const index = this.getSlotIndex(slot);
     this.dropItem(data, index);
   });
 
+  this.initLayoutDragListeners()
+    .forEach((res) => {
+      const { slot, dataTransfer } = res;
+      this.setDragData(slot, dataTransfer);
+    });
+
   this.initLayoutRemoveListeners()
     .forEach(item => this.removeItem(item));
 }
+
+/**
+ * Sets the item to the data transfer
+ * @param {Node} slot - slot from which item should be retrieved
+ * @param {DataTransfer} dataTransfer - drag event data transfer
+ */
+LayoutView.prototype.setDragData = function (slot, dataTransfer) {
+  const slotIndex = this.getSlotIndex(slot);
+  const item = this.model.getArticle(slotIndex);
+  const parseItem = JSON.stringify(item);
+
+  dataTransfer.setData('text', parseItem);
+  dataTransfer.setData('source', slotIndex);
+};
+
+/**
+ * Creates stream with dragged items from within layout
+ * @returns {Observable} - stream with dragged items
+ */
+LayoutView.prototype.initLayoutDragListeners = function () {
+  const config = this.config;
+
+  this.dragLayoutStream = new Observable((observer) => {
+    function handler(e) {
+      const target = e.target;
+      const slot = getItemSlot(target, config.attributes.slot);
+
+      if (!slot) {
+        return;
+      }
+
+      const dataTransfer = e.dataTransfer;
+
+      observer.next({ slot, dataTransfer });
+    }
+
+    this.element.addEventListener('dragstart', e => handler(e));
+
+    return () => {
+      this.element.removeEventListener('dragstart', handler);
+    };
+  });
+
+  return this.dragLayoutStream;
+};
 
 /**
  * Creates stream with dropped items
@@ -72,7 +131,11 @@ LayoutView.prototype.initLayoutDropListeners = function () {
       const unparsedData = e.dataTransfer.getData('text');
       const data = JSON.parse(unparsedData);
 
-      observer.next({ slot, data });
+      // retrieve source if it there
+      const unparsedSource = e.dataTransfer.getData('source');
+      const source = parseInt(unparsedSource, 10);
+
+      observer.next({ slot, data, source });
     }
 
     this.element.addEventListener('drop', e => handler(e));

@@ -68,6 +68,24 @@ describe('Layout View', () => {
         expect(slots[1].innerHTML).to.be.equal(expectedHtml);
       });
 
+      describe('drag', () => {
+        it('should be able to set item data if item is moved within the layout', () => {
+          const slot = document.querySelector('[data-layout-slot]');
+          const dataTransferStub = {
+            setData: () => {}
+          };
+
+          const item = layoutViewInstance.model.stack[0];
+
+          sandbox.spy(dataTransferStub, 'setData');
+
+          layoutViewInstance.setDragData(slot, dataTransferStub);
+
+          expect(dataTransferStub.setData.withArgs('source', 0).calledOnce).to.be.equal(true);
+          expect(dataTransferStub.setData.withArgs('text', JSON.stringify(item)).calledOnce).to.be.equal(true);
+        });
+      });
+
       describe('drop', () => {
         it('should be able to render separate item', () => {
           const item = { content: { title: 'testtitle' } };
