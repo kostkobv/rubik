@@ -20,7 +20,7 @@ function LayoutView(config) {
 
   this.initClickListeners();
   this.initLayoutDropListeners().forEach((res) => {
-    const {slot, data} = res;
+    const { slot, data } = res;
     const index = this.getSlotIndex(slot);
     this.dropItem(data, index);
   });
@@ -48,7 +48,7 @@ LayoutView.prototype.initLayoutDropListeners = function () {
       const data = e.dataTransfer.getData('text');
       const unparsedData = JSON.parse(data);
 
-      observer.next({ slot: target, data: unparsedData});
+      observer.next({ slot: target, data: unparsedData });
     }
 
     this.element.addEventListener('drop', e => handler(e));
