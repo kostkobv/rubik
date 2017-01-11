@@ -209,7 +209,7 @@ LayoutView.prototype.dropItem = function (item, slotIndex) {
 
   // if slot is empty
   if (!actualSlotContent) {
-    this.slots[slotIndex] = this.renderSlot(item);
+    this.slots[slotIndex].innerHTML = this.renderSlot(item);
     return;
   }
 

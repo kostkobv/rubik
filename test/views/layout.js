@@ -70,7 +70,7 @@ describe('Layout View', () => {
 
       describe('drop', () => {
         it('should be able to render separate item', () => {
-          const item = { content: { title: 'title' } };
+          const item = { content: { title: 'testtitle' } };
           layoutViewInstance.dropItem(item, 1);
 
           expect(slots[1].innerHTML)
@@ -83,7 +83,7 @@ describe('Layout View', () => {
           const oldItemFromStack = layoutViewInstance.model.stack[1].content.title;
           const nextOldItem = slots[2].innerHTML;
           const nextOldItemFromStack = layoutViewInstance.model.stack[2].content.title;
-          const item = { content: { title: 'title' } };
+          const item = { content: { title: 'testtitle' } };
           layoutViewInstance.dropItem(item, 1);
 
           expect(slots[2].innerHTML).to.be.equal(oldItem);
@@ -93,7 +93,7 @@ describe('Layout View', () => {
         });
 
         it('should render only the slot if slot was empty', () => {
-          const item = { content: { title: 'title' } };
+          const item = { content: { title: 'testtitle' } };
           layoutViewInstance.removeItem(slots[1].querySelector(`[${config.attributes.item}]`));
 
           sandbox.spy(layoutViewInstance, 'renderSlot');
@@ -101,8 +101,9 @@ describe('Layout View', () => {
 
           layoutViewInstance.dropItem(item, 1);
 
-          expect(layoutViewInstance.render.called).to.be.equal(false);
-          return expect(layoutViewInstance.renderSlot.called).to.be.true;
+          expect(slots[1].innerHTML)
+            .to.be.equal(`<div data-layout-item=""><div data-layout-item-remove=""></div>${item.content.title}</div>`);
+          expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
         });
       });
 
