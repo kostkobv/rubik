@@ -62,7 +62,7 @@ LayoutView.prototype.initLayoutDropListeners = function () {
   this.dropLayoutStream = new Observable((observer) => {
     function handler(e) {
       const target = e.target;
-      const slot = getItemSlot(e.target, config.attributes.slot);
+      const slot = getItemSlot(target, config.attributes.slot);
 
       if (!slot) {
         return;
