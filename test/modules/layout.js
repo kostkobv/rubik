@@ -54,6 +54,10 @@ describe('layout module', () => {
       expect(layoutInstance.stack.length).to.be.equal(10);
     });
 
+    it('should be able to retrieve elements from the stack by index', () => {
+      expect(layoutInstance.getArticle(2)).to.be.eql(config.articles['2']);
+    });
+
     it('should leave empty slots in stack if there was no data assigned there', () =>
       expect(layoutInstance.stack[8]).to.be.undefined
     );
