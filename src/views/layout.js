@@ -12,7 +12,7 @@ import LayoutModule from '../modules/layout';
 function getItemSlot(item, slotAttributeName) {
   // do not go higher than this level of parentness
   const LIMIT = 5;
-  let parent = item.parentNode;
+  let parent = item;
 
   for (let index = 0; index < LIMIT; index += 1) {
     if (parent.hasAttribute(slotAttributeName)) {
