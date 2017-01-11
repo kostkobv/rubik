@@ -2,6 +2,29 @@ import compileTemplate from 'lodash/template';
 import Observable from 'zen-observable';
 import LayoutModule from '../modules/layout';
 
+/**
+ * Gets the slot where item is currently rendered
+ * @private
+ * @param {Node} item - layout item
+ * @param {String} slotAttributeName - slot attribute name
+ * @returns {Node} - layout slot where item is rendered
+ */
+function getItemSlot(item, slotAttributeName) {
+  // do not go higher than this level of parentness
+  const LIMIT = 5;
+  let parent = item.parentNode;
+
+  for (let index = 0; index < LIMIT; index += 1) {
+    if (parent.hasAttribute(slotAttributeName)) {
+      return parent;
+    }
+
+    parent = parent.parentNode;
+  }
+
+  return null;
+}
+
 function LayoutView(config) {
   this.config = config;
 
@@ -39,16 +62,17 @@ LayoutView.prototype.initLayoutDropListeners = function () {
   this.dropLayoutStream = new Observable((observer) => {
     function handler(e) {
       const target = e.target;
+      const slot = getItemSlot(e.target, config.attributes.slot);
 
-      if (!target.hasAttribute(config.attributes.slot)) {
+      if (!slot) {
         return;
       }
 
       // retrieve droppable data
-      const data = e.dataTransfer.getData('text');
-      const unparsedData = JSON.parse(data);
+      const unparsedData = e.dataTransfer.getData('text');
+      const data = JSON.parse(unparsedData);
 
-      observer.next({ slot: target, data: unparsedData });
+      observer.next({ slot, data });
     }
 
     this.element.addEventListener('drop', e => handler(e));
@@ -88,29 +112,6 @@ LayoutView.prototype.initClickListeners = function () {
     };
   });
 };
-
-/**
- * Gets the slot where item is currently rendered
- * @private
- * @param {Node} item - layout item
- * @param {String} slotAttributeName - slot attribute name
- * @returns {Node} - layout slot where item is rendered
- */
-function getItemSlot(item, slotAttributeName) {
-  // do not go higher than this level of parentness
-  const LIMIT = 5;
-  let parent = item.parentNode;
-
-  for (let index = 0; index < LIMIT; index += 1) {
-    if (parent.hasAttribute(slotAttributeName)) {
-      return parent;
-    }
-
-    parent = parent.parentNode;
-  }
-
-  return null;
-}
 
 /**
  * Removes item from the layout
