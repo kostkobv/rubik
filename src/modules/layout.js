@@ -65,7 +65,7 @@ LayoutModule.prototype.getArticle = function (index) {
 
 /**
  * Pushes article into stack. Shifts all the articles that are coming after
- * the slot if slot was not empty. Just places the article into the slot
+ * the slot if slot was not empty (until first empty slot). Just places the article into the slot
  * if slot previously was empty
  *
  * @param {Number} index - index into which article should be pushed
@@ -79,7 +79,17 @@ LayoutModule.prototype.pushArticle = function (index, article) {
     return true;
   }
 
+  // insert item to the stack
   this.stack.splice(index, 0, article);
+
+  // if there is empty slot after index of the pushed one
+  for (let spaceIndex = index; spaceIndex < this.stack.length; spaceIndex += 1) {
+    if (!this.stack[spaceIndex]) {
+      // cut it out from there
+      this.stack.splice(spaceIndex, 1);
+      return true;
+    }
+  }
 
   return true;
 };

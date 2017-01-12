@@ -83,14 +83,21 @@ describe('layout module', () => {
       it('should shift the whole stack if article was added to the stack onto non-empty slot', () => {
         const testArticle = { ID: 202, content: {} };
         const oldArticle = layoutInstance.stack[1];
-        const ninethArticle = layoutInstance.stack[9];
 
         layoutInstance.pushArticle(1, testArticle);
 
         expect(layoutInstance.stack[1]).to.be.eql(testArticle);
-        expect(layoutInstance.stack[2]).to.be.eql(oldArticle);
-        expect(layoutInstance.stack[10]).to.be.eql(ninethArticle);
-        return expect(layoutInstance.stack.length).to.be.equal(11);
+        return expect(layoutInstance.stack[2]).to.be.eql(oldArticle);
+      });
+
+      it('should shift the whole stack until first empty slot if article was added to the stack onto non-empty slot', () => {
+        const testArticle = { ID: 202, content: {} };
+        const ninethArticle = layoutInstance.stack[9];
+
+        layoutInstance.pushArticle(1, testArticle);
+
+        expect(layoutInstance.stack[9]).to.be.eql(ninethArticle);
+        return expect(layoutInstance.stack.length).to.be.equal(10);
       });
 
       it('should not shift the stack if article was added to the stack onto empty slot', () => {
