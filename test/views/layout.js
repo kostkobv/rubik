@@ -123,6 +123,91 @@ describe('Layout View', () => {
             .to.be.equal(`<div data-layout-item=""><div data-layout-item-remove=""></div>${item.content.title}</div>`);
           expect(layoutViewInstance.model.stack[1].content.title).to.be.equal(item.content.title);
         });
+
+        it('should be able to retrieve data from the drop event', () => {
+          const observer = {
+            next: () => {}
+          };
+          const slot = layoutViewInstance.slots[1];
+          const item = { content: { title: 'testtitle' } };
+          const event = {
+            dataTransfer: {
+              getData: () => {}
+            },
+            target: slot
+          };
+
+          sandbox.spy(observer, 'next');
+
+          sandbox.stub(event.dataTransfer, 'getData').withArgs('text').returns(JSON.stringify(item));
+
+          layoutViewInstance.layoutDropHandler(event, observer);
+
+          const args = {
+            slot,
+            data: item,
+            source: NaN
+          };
+
+          return expect(observer.next.withArgs(args).calledOnce).to.be.true;
+        });
+
+        it('should set source to NaN if it is not defined', () => {
+          const observer = {
+            next: () => {}
+          };
+          const slot = layoutViewInstance.slots[1];
+          const item = { content: { title: 'testtitle' } };
+          const event = {
+            dataTransfer: {
+              getData: () => {}
+            },
+            target: slot
+          };
+
+          sandbox.spy(observer, 'next');
+
+          sandbox.stub(event.dataTransfer, 'getData').withArgs('text').returns(JSON.stringify(item));
+
+          layoutViewInstance.layoutDropHandler(event, observer);
+
+          const args = {
+            slot,
+            data: item,
+            source: NaN
+          };
+
+          return expect(observer.next.withArgs(args).calledOnce).to.be.true;
+        });
+
+        it('should set source to number from event dataTransfer', () => {
+          const observer = {
+            next: () => {}
+          };
+          const slot = layoutViewInstance.slots[1];
+          const item = { content: { title: 'testtitle' } };
+          const event = {
+            dataTransfer: {
+              getData: () => {}
+            },
+            target: slot
+          };
+
+          sandbox.spy(observer, 'next');
+
+          sandbox.stub(event.dataTransfer, 'getData').withArgs('text').returns(JSON.stringify(item));
+          event.dataTransfer.getData.withArgs('source').returns('12');
+
+          layoutViewInstance.layoutDropHandler(event, observer);
+
+          const args = {
+            slot,
+            data: item,
+            source: 12
+          };
+
+          return expect(observer.next.withArgs(args).calledOnce).to.be.true;
+        });
       });
 
       describe('delete', () => {
