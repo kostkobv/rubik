@@ -84,6 +84,24 @@ describe('Layout View', () => {
           expect(dataTransferStub.setData.withArgs('source', 0).calledOnce).to.be.equal(true);
           expect(dataTransferStub.setData.withArgs('text', JSON.stringify(item)).calledOnce).to.be.equal(true);
         });
+
+        it('should be able to transfer dataTransfer option to the stream', () => {
+          const slot = document.querySelector('[data-layout-slot]');
+          const event = {
+            dataTransfer: {},
+            target: slot.firstChild
+          };
+          const observer = {
+            next: () => {}
+          };
+
+          sandbox.spy(observer, 'next');
+
+          layoutViewInstance.layoutDragItemHandler(event, observer);
+
+          return expect(observer.next.withArgs({ slot, dataTransfer: event.dataTransfer })
+            .calledOnce).to.be.true;
+        });
       });
 
       describe('drop', () => {

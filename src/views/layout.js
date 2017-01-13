@@ -85,21 +85,8 @@ LayoutView.prototype.setDragData = function (slot, dataTransfer) {
  * @returns {Observable} - stream with dragged items
  */
 LayoutView.prototype.initLayoutDragListeners = function () {
-  const config = this.config;
-
   this.dragLayoutStream = new Observable((observer) => {
-    function handler(e) {
-      const target = e.target;
-      const slot = getItemSlot(target, config.attributes.slot);
-
-      if (!slot) {
-        return;
-      }
-
-      const dataTransfer = e.dataTransfer;
-
-      observer.next({ slot, dataTransfer });
-    }
+    const handler = event => this.layoutDragItemHandler(event, observer);
 
     this.element.addEventListener('dragstart', e => handler(e));
 
@@ -109,6 +96,24 @@ LayoutView.prototype.initLayoutDragListeners = function () {
   });
 
   return this.dragLayoutStream;
+};
+
+/**
+ * Layout drag item events handler
+ * @param {DragEvent} event - drag item event
+ * @param {Observer} observer - observer instance for layout drag item events stream
+ */
+LayoutView.prototype.layoutDragItemHandler = function (event, observer) {
+  const target = event.target;
+  const slot = getItemSlot(target, this.config.attributes.slot);
+
+  if (!slot) {
+    return;
+  }
+
+  const dataTransfer = event.dataTransfer;
+
+  observer.next({ slot, dataTransfer });
 };
 
 /**
