@@ -107,6 +107,46 @@ describe('Search View', () => {
       expect(articlesNodeList[0].getAttribute('draggable')).to.be.equal('true');
       expect(articlesNodeList[1].getAttribute('draggable')).to.be.equal('true');
     });
+
+    describe('drag', () => {
+      let articlesNodeList;
+
+      beforeEach(() => {
+        articlesNodeList = document.querySelector(config.selectors.results.element).children;
+      });
+
+      it('should set the data to the drag event on dragstart', () => {
+        const event = {
+          target: articlesNodeList[1]
+        };
+        const observer = {
+          next: () => {}
+        };
+
+        sandbox.spy(observer, 'next');
+
+        searchViewInstance.dragItemEventHandler(event, observer);
+
+        return expect(observer.next.withArgs(event).calledOnce).to.be.true;
+      });
+
+      it('should attach the drag data to the event', () => {
+        const event = {
+          target: articlesNodeList[1],
+          dataTransfer: {
+            setData: () => {}
+          }
+        };
+        const item = searchViewInstance.model.getArticle(1);
+
+        sandbox.spy(event.dataTransfer, 'setData');
+
+        searchViewInstance.attachDataToDragEvent(event);
+
+        return expect(event.dataTransfer.setData
+          .withArgs('text/plain', JSON.stringify(item)).calledOnce).to.be.true;
+      });
+    });
   });
 
   describe('pagination', () => {

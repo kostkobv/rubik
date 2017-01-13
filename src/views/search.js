@@ -65,18 +65,10 @@ SearchView.prototype.attachDataToDragEvent = function (event) {
  * @returns {Observable} - drag listeners observable
  */
 SearchView.prototype.initDragItemListeners = function () {
-  const config = this.config;
-
   this.dragItemEventsStream = new Observable((observer) => {
-    function handler(e) {
-      const target = e.target;
+    const handler = event => this.dragItemEventHandler(event, observer);
 
-      if (target.hasAttribute(config.attributes.result)) {
-        observer.next(e);
-      }
-    }
-
-    this.searchResults.addEventListener('dragstart', e => handler(e));
+    this.searchResults.addEventListener('dragstart', handler);
 
     return () => {
       this.searchResults.removeEventListener('dragstart', handler);
@@ -84,6 +76,19 @@ SearchView.prototype.initDragItemListeners = function () {
   });
 
   return this.dragItemEventsStream;
+};
+
+/**
+ * Drag item event handler
+ * @param {DragEvent} event - drag event
+ * @param {Observer} observer - observer
+ */
+SearchView.prototype.dragItemEventHandler = function (event, observer) {
+  const target = event.target;
+
+  if (target.hasAttribute(this.config.attributes.result)) {
+    observer.next(event);
+  }
 };
 
 /**
@@ -119,6 +124,16 @@ function parseFormElements(formElements) {
   return formData;
 }
 
+SearchView.prototype.submitFormHandler = function (event, observer) {
+  event.preventDefault();
+
+  // parse elements
+  const values = parseFormElements(this.searchForm.elements);
+
+  // send data to the stream
+  observer.next(values);
+};
+
 /**
  * Inits the form listeners
  *
@@ -126,45 +141,43 @@ function parseFormElements(formElements) {
  */
 SearchView.prototype.initFormListeners = function () {
   // create observable
-  return new Observable((observer) => {
+  this.formEventsStream = new Observable((observer) => {
     // get the elements
-    const formElements = this.searchForm.elements;
     const searchFormFilters = this.searchForm.querySelectorAll(this.config.selectors.form.filters);
-
-    // init handler for submition
-    const handler = (e) => {
-      e.preventDefault();
-
-      // parse elements
-      const values = parseFormElements(formElements);
-
-      // send data to the stream
-      observer.next(values);
-    };
+    const submitHandler = event => this.submitFormHandler(event, observer);
 
     // init handler for change event
-    const filterChangeHandler = (event) => {
-      // change should come only from form elements
-      if (Array.prototype.indexOf.call(searchFormFilters, event.target) === -1) {
-        return;
-      }
-
-      // and then submit event is triggered
-      handler(event);
-    };
+    const filterChangeHandler = event => this.changeFormHandler(event, observer, searchFormFilters);
 
     // listen for submit and change events
-    this.searchForm.addEventListener('submit', handler, true);
+    this.searchForm.addEventListener('submit', submitHandler, true);
     this.searchForm.addEventListener('change', filterChangeHandler, true);
 
     return () => {
       // give ability to unchain the submit and change listeners later
-      this.searchForm.removeEventListener('submit', handler);
+      this.searchForm.removeEventListener('submit', submitHandler);
       this.searchForm.removeEventListener('change', filterChangeHandler);
     };
   });
+
+  return this.formEventsStream;
 };
 
+/**
+ * Form change event handler
+ * @param {Event} event - change event
+ * @param {Observer} observer - form events stream observer object
+ * @param {NodeList} searchFormFilters - search form filters elements
+ */
+SearchView.prototype.changeFormHandler = function (event, observer, searchFormFilters) {
+  // change should come only from form elements
+  if (Array.prototype.indexOf.call(searchFormFilters, event.target) === -1) {
+    return;
+  }
+
+  // and then submit event is triggered
+  this.submitFormHandler(event, observer);
+};
 
 /**
  * Inits the pagination listeners

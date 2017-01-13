@@ -85,21 +85,8 @@ LayoutView.prototype.setDragData = function (slot, dataTransfer) {
  * @returns {Observable} - stream with dragged items
  */
 LayoutView.prototype.initLayoutDragListeners = function () {
-  const config = this.config;
-
   this.dragLayoutStream = new Observable((observer) => {
-    function handler(e) {
-      const target = e.target;
-      const slot = getItemSlot(target, config.attributes.slot);
-
-      if (!slot) {
-        return;
-      }
-
-      const dataTransfer = e.dataTransfer;
-
-      observer.next({ slot, dataTransfer });
-    }
+    const handler = event => this.layoutDragItemHandler(event, observer);
 
     this.element.addEventListener('dragstart', e => handler(e));
 
@@ -112,31 +99,30 @@ LayoutView.prototype.initLayoutDragListeners = function () {
 };
 
 /**
+ * Layout drag item events handler
+ * @param {DragEvent} event - drag item event
+ * @param {Observer} observer - observer instance for layout drag item events stream
+ */
+LayoutView.prototype.layoutDragItemHandler = function (event, observer) {
+  const target = event.target;
+  const slot = getItemSlot(target, this.config.attributes.slot);
+
+  if (!slot) {
+    return;
+  }
+
+  const dataTransfer = event.dataTransfer;
+
+  observer.next({ slot, dataTransfer });
+};
+
+/**
  * Creates stream with dropped items
  * @returns {Observable} - stream with dropped items
  */
 LayoutView.prototype.initLayoutDropListeners = function () {
-  const config = this.config;
-
   this.dropLayoutStream = new Observable((observer) => {
-    function handler(e) {
-      const target = e.target;
-      const slot = getItemSlot(target, config.attributes.slot);
-
-      if (!slot) {
-        return;
-      }
-
-      // retrieve droppable data
-      const unparsedData = e.dataTransfer.getData('text');
-      const data = JSON.parse(unparsedData);
-
-      // retrieve source if it there
-      const unparsedSource = e.dataTransfer.getData('source');
-      const source = parseInt(unparsedSource, 10);
-
-      observer.next({ slot, data, source });
-    }
+    const handler = e => this.layoutDropHandler(e, observer);
 
     this.element.addEventListener('drop', e => handler(e));
 
@@ -149,8 +135,32 @@ LayoutView.prototype.initLayoutDropListeners = function () {
 };
 
 /**
+ * Layout drop events stream handler
+ * @param {DragEvent} event - drop event
+ * @param {Observer} observer - layout drop events observer instance
+ */
+LayoutView.prototype.layoutDropHandler = function (event, observer) {
+  const target = event.target;
+  const slot = getItemSlot(target, this.config.attributes.slot);
+
+  if (!slot) {
+    return;
+  }
+
+  // retrieve droppable data
+  const unparsedData = event.dataTransfer.getData('text');
+  const data = JSON.parse(unparsedData);
+
+  // retrieve source if it there
+  const unparsedSource = event.dataTransfer.getData('source');
+  const source = parseInt(unparsedSource, 10);
+
+  observer.next({ slot, data, source });
+};
+
+/**
  * Creates the stream with all the remove item events
- * @returns {Observer} - observer with remove item events
+ * @returns {Observable} - observer with remove item events
  */
 LayoutView.prototype.initLayoutRemoveListeners = function () {
   const removeItemAttribute = this.config.attributes.remove;
